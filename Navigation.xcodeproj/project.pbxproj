@@ -6,8 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E4B89FC52E2D6B14009C75B4 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B89FB92E2D6B14009C75B4 /* ProfileViewController.swift */; };
+		E4B89FCC2E2D6C89009C75B4 /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B89FCB2E2D6C89009C75B4 /* ProfileHeaderView.swift */; };
+		E4C7A45C2E33F2630070AF9B /* MyCustomTestField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C7A45B2E33F2630070AF9B /* MyCustomTestField.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		E42D9D7A2E24275C00EDB4FA /* Navigation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Navigation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4B89FB92E2D6B14009C75B4 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		E4B89FCB2E2D6C89009C75B4 /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
+		E4C7A45B2E33F2630070AF9B /* MyCustomTestField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCustomTestField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +54,7 @@
 		E42D9D712E24275C00EDB4FA = {
 			isa = PBXGroup;
 			children = (
+				E4B89FCA2E2D6BAE009C75B4 /* Profile */,
 				E42D9D7C2E24275C00EDB4FA /* Navigation */,
 				E42D9D7B2E24275C00EDB4FA /* Products */,
 			);
@@ -56,6 +66,16 @@
 				E42D9D7A2E24275C00EDB4FA /* Navigation.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E4B89FCA2E2D6BAE009C75B4 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				E4B89FCB2E2D6C89009C75B4 /* ProfileHeaderView.swift */,
+				E4B89FB92E2D6B14009C75B4 /* ProfileViewController.swift */,
+				E4C7A45B2E33F2630070AF9B /* MyCustomTestField.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -132,6 +152,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4B89FC52E2D6B14009C75B4 /* ProfileViewController.swift in Sources */,
+				E4C7A45C2E33F2630070AF9B /* MyCustomTestField.swift in Sources */,
+				E4B89FCC2E2D6C89009C75B4 /* ProfileHeaderView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
