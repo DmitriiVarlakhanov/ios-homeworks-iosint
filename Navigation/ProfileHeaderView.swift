@@ -14,9 +14,8 @@ class ProfileHeaderView: UIView {
     private var statusText: String = "Listening to music"
 
     private lazy var myImageView: UIImageView = {
-        //let myImageView = UIImageView(frame: CGRect(x: 16, y: 96, width: 128, height: 128))
         let myImageView = UIImageView()
-
+        
         myImageView.translatesAutoresizingMaskIntoConstraints = false
         myImageView.image = UIImage(named: "ProfilePhoto")
         myImageView.contentMode = .scaleAspectFill
@@ -30,7 +29,6 @@ class ProfileHeaderView: UIView {
     }()
 
     private lazy var myProfileNameLabel: UILabel = {
-        //let myProfileNameLabel = UILabel(frame: CGRect(x: 160, y: 107, width: 200, height: 21))
         let myProfileNameLabel = UILabel()
 
         myProfileNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -42,7 +40,6 @@ class ProfileHeaderView: UIView {
     }()
 
     private lazy var myStatusLabel: UILabel = {
-        //let myStatusLabel = UILabel(frame: CGRect(x: 160, y: 163, width: 200, height: 21))
         let myStatusLabel = UILabel()
 
         myStatusLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -54,9 +51,6 @@ class ProfileHeaderView: UIView {
     }()
 
     private lazy var myShowStatusButton: UIButton = {
-        //let UIScreenMainBoundsWidth: CGFloat = UIScreen.main.bounds.width
-
-        //let myShowStatusButton = UIButton(frame: CGRect(x: 16, y: 240, width: Int(UIScreenMainBoundsWidth) - 32, height: 50))
         let myShowStatusButton = UIButton()
 
         myShowStatusButton.translatesAutoresizingMaskIntoConstraints = false
@@ -86,17 +80,6 @@ class ProfileHeaderView: UIView {
         return myCustomTextField
     }()
 
-    // MARK: - Actions
-
-    @objc func buttonPressed() {
-        print(myStatusLabel.text!)
-        myStatusLabel.text = statusText
-    }
-
-    @objc func statusTextChanged(_ textField: UITextField) {
-        statusText = textField.text ?? ""
-    }
-
     // MARK: - Initialization
 
     override init(frame: CGRect) {
@@ -113,6 +96,17 @@ class ProfileHeaderView: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Actions
+
+    @objc func buttonPressed() {
+        print(myStatusLabel.text!)
+        myStatusLabel.text = statusText
+    }
+
+    @objc func statusTextChanged(_ textField: UITextField) {
+        statusText = textField.text ?? ""
     }
 
     // MARK: - Constraints
