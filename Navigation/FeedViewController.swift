@@ -14,28 +14,75 @@ struct Post {
 
 class FeedViewController: UIViewController {
 
+    // MARK: - Properties
+
     var post = Post(title: "New post")
+
+    private lazy var firstButton: UIButton = {
+        let firstButton = UIButton()
+
+        firstButton.setTitle("First Button", for: .normal)
+        firstButton.setTitleColor(.white, for: .normal)
+        firstButton.backgroundColor = .systemBlue
+
+        firstButton.addTarget(self, action: #selector(showPost), for: .touchUpInside)
+
+        return firstButton
+    }()
+
+    private lazy var secondButton: UIButton = {
+        let secondButton = UIButton()
+
+        secondButton.setTitle("Second Button", for: .normal)
+        secondButton.setTitleColor(.white, for: .normal)
+        secondButton.backgroundColor = .systemRed
+
+        secondButton.addTarget(self, action: #selector(showPost), for: .touchUpInside)
+
+        return secondButton
+    }()
+
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView()
+
+        stackView.axis = .vertical
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.spacing = 10
+        stackView.alignment = .fill
+        stackView.distribution = .fillEqually
+
+        stackView.addArrangedSubview(firstButton)
+        stackView.addArrangedSubview(secondButton)
+
+        return stackView
+    }()
+
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Post", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.addTarget(self, action: #selector(showPost), for: .touchUpInside)
+        self.view.addSubview(stackView)
 
-        self.view.addSubview(button)
-
-        NSLayoutConstraint.activate([
-            button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            button.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
-        ])
+        setupConstraints()
     }
+
+    // MARK: - Actions
 
     @objc func showPost() {
         let postViewController = PostViewController()
         postViewController.post = self.post
         self.navigationController?.pushViewController(postViewController, animated: true)
+    }
+
+    // MARK: - Constraints
+
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            stackView.widthAnchor.constraint(equalToConstant: 200),
+            stackView.heightAnchor.constraint(equalToConstant: 200)
+        ])
     }
 }
