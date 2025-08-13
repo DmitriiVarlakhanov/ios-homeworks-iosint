@@ -22,8 +22,8 @@ class MyCustomTestField: UITextField {
         self.backgroundColor = .white
         self.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         self.textColor = .black
-        self.text = "Listening to music"
-        
+        self.placeholder = "Enter text"
+
         self.layer.cornerRadius = 12
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor.black.cgColor

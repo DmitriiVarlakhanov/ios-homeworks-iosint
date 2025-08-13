@@ -11,7 +11,7 @@ class ProfileHeaderView: UIView {
 
     // MARK: - Properties
 
-    private var statusText: String = "Listening to music"
+    private var statusText: String? = nil
 
     private lazy var myImageView: UIImageView = {
         let myImageView = UIImageView()
@@ -102,16 +102,16 @@ class ProfileHeaderView: UIView {
 
     @objc func buttonPressed() {
         print(myStatusLabel.text!)
-        myStatusLabel.text = statusText
+        myStatusLabel.text = statusText ?? ""
     }
 
     @objc func statusTextChanged(_ textField: UITextField) {
         statusText = textField.text ?? ""
     }
 
-    // MARK: - Constraints
+    // MARK: - Private
 
-    func setupConstraints() {
+    private func setupConstraints() {
         let safeAreaGuide = self.safeAreaLayoutGuide
 
         NSLayoutConstraint.activate([

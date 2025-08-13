@@ -51,9 +51,9 @@ class ProfileViewController: UIViewController {
         super.viewWillLayoutSubviews()
     }
 
-    // MARK: - Constraints
+    // MARK: - Private
 
-    func setupConstraints() {
+    private func setupConstraints() {
         let safeAreaGuide = self.view.safeAreaLayoutGuide
 
         NSLayoutConstraint.activate([
