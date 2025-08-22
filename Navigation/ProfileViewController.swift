@@ -11,26 +11,19 @@ class ProfileViewController: UIViewController {
 
     // MARK: - Properties
 
-    private lazy var profileHeaderView: ProfileHeaderView = {
-        let profileHeaderView = ProfileHeaderView()
+    private lazy var profileTableView: UITableView = {
+        let profileTableView = UITableView(frame: .zero, style: .plain)
 
-        profileHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        profileTableView.translatesAutoresizingMaskIntoConstraints = false
 
-        return profileHeaderView
+        return profileTableView
     }()
 
-    private lazy var randomButton: UIButton = {
-        let randomButton = UIButton()
+    private enum CellReuseID: String {
+        case firstCustom = "PostTableViewCell_ReuseID"
+    }
 
-        randomButton.translatesAutoresizingMaskIntoConstraints = false
-        randomButton.setTitle("Random button", for: .normal)
-        randomButton.setTitleColor(.white, for: .normal)
-        randomButton.backgroundColor = .blue
-
-        randomButton.layer.cornerRadius = 14
-
-        return randomButton
-    }()
+    fileprivate let data = PostModel.make()
 
     // MARK: - Lifecycle
 
@@ -39,12 +32,12 @@ class ProfileViewController: UIViewController {
 
         self.title = "Profile"
 
-        self.view.backgroundColor = .lightGray
+        self.view.backgroundColor = .systemGray6
 
-        self.view.addSubview(profileHeaderView)
-        self.view.addSubview(randomButton)
+        self.view.addSubview(profileTableView)
 
         setupConstraints()
+        setupTableView()
     }
 
     override func viewWillLayoutSubviews() {
@@ -57,14 +50,48 @@ class ProfileViewController: UIViewController {
         let safeAreaGuide = self.view.safeAreaLayoutGuide
 
         NSLayoutConstraint.activate([
-            profileHeaderView.topAnchor.constraint(equalTo: safeAreaGuide.topAnchor),
-            profileHeaderView.leadingAnchor.constraint(equalTo: safeAreaGuide.leadingAnchor, constant: 0),
-            profileHeaderView.trailingAnchor.constraint(equalTo: safeAreaGuide.trailingAnchor, constant: 0),
-            profileHeaderView.heightAnchor.constraint(equalToConstant: 220),
-
-            randomButton.leftAnchor.constraint(equalTo: safeAreaGuide.leftAnchor, constant: 0),
-            randomButton.rightAnchor.constraint(equalTo: safeAreaGuide.rightAnchor, constant: 0),
-            randomButton.bottomAnchor.constraint(equalTo: safeAreaGuide.bottomAnchor)
+            profileTableView.topAnchor.constraint(equalTo: safeAreaGuide.topAnchor),
+            profileTableView.leadingAnchor.constraint(equalTo: safeAreaGuide.leadingAnchor, constant: 0),
+            profileTableView.trailingAnchor.constraint(equalTo: safeAreaGuide.trailingAnchor, constant: 0),
+            profileTableView.bottomAnchor.constraint(equalTo: safeAreaGuide.bottomAnchor)
         ])
     }
+
+    private func setupTableView() {
+        profileTableView.rowHeight = UITableView.automaticDimension
+
+        let profileHeaderView = ProfileHeaderView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 230))
+        profileTableView.tableHeaderView = profileHeaderView
+        profileTableView.tableFooterView = UIView()
+
+        profileTableView.register(
+            PostTableViewCell.self,
+            forCellReuseIdentifier: CellReuseID.firstCustom.rawValue
+        )
+
+        profileTableView.dataSource = self
+        profileTableView.delegate = self
+    }
 }
+
+extension ProfileViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: CellReuseID.firstCustom.rawValue,
+            for: indexPath
+        ) as? PostTableViewCell else {
+            fatalError("could not dequeueReusableCell")
+        }
+
+        cell.update(data[indexPath.row])
+
+        return cell
+    }
+    
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        4
+    }
+}
+
+extension ProfileViewController: UITableViewDelegate { }

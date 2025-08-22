@@ -91,6 +91,7 @@ class ProfileHeaderView: UIView {
         self.addSubview(myShowStatusButton)
         self.addSubview(myCustomTextField)
 
+        setupView()
         setupConstraints()
     }
 
@@ -111,6 +112,10 @@ class ProfileHeaderView: UIView {
 
     // MARK: - Private
 
+    private func setupView() {
+        self.backgroundColor = .systemGray6
+    }
+
     private func setupConstraints() {
         let safeAreaGuide = self.safeAreaLayoutGuide
 
@@ -127,6 +132,7 @@ class ProfileHeaderView: UIView {
             myShowStatusButton.rightAnchor.constraint(equalTo: safeAreaGuide.rightAnchor, constant: -16),
             myShowStatusButton.topAnchor.constraint(equalTo: myImageView.bottomAnchor, constant: 36),
             myShowStatusButton.heightAnchor.constraint(equalToConstant: 50),
+            myShowStatusButton.bottomAnchor.constraint(equalTo: safeAreaGuide.bottomAnchor),
 
             myStatusLabel.leftAnchor.constraint(equalTo: myImageView.rightAnchor, constant: 27),
             myStatusLabel.bottomAnchor.constraint(equalTo: myShowStatusButton.topAnchor, constant: -74),

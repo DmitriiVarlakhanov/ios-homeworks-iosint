@@ -8,3 +8,5 @@
 
 ## + Домашнее задание "UIScrollView, UITableView, UITableViewDatasource, UITableViewDelegate. Часть 1" от 13.08.2025
 
+## + Домашнее задание "UIScrollView, UITableView, UITableViewDatasource, UITableViewDelegate. Часть 2" от 22.08.2025
+
