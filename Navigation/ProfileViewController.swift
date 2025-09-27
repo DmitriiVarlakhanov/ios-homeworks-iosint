@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import StorageService
 
 class ProfileViewController: UIViewController {
 
@@ -31,7 +32,11 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = .systemGray6
+#if DEBUG
+        self.view.backgroundColor = .red
+#else
+        self.view.backgroundColor = .blue
+#endif
 
         self.view.addSubview(profileTableView)
 
@@ -66,7 +71,12 @@ class ProfileViewController: UIViewController {
     }
 
     private func setupTableView() {
-        profileTableView.backgroundColor = .systemGray6
+
+#if DEBUG
+        profileTableView.backgroundColor = .red
+#else
+        profileTableView.backgroundColor = .blue
+#endif
 
         profileTableView.rowHeight = UITableView.automaticDimension
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension PostModel {
+public extension PostModel {
 
     static func make() -> [PostModel] {
         return [
