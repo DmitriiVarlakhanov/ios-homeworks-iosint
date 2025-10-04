@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class ProfileHeaderView: UIView {
 
@@ -16,7 +17,6 @@ class ProfileHeaderView: UIView {
     private lazy var myImageView: UIImageView = {
         let myImageView = UIImageView()
         
-        myImageView.translatesAutoresizingMaskIntoConstraints = false
         myImageView.image = UIImage(named: "ProfilePhoto")
         myImageView.contentMode = .scaleAspectFill
         myImageView.clipsToBounds = true
@@ -39,7 +39,6 @@ class ProfileHeaderView: UIView {
     private lazy var myProfileNameLabel: UILabel = {
         let myProfileNameLabel = UILabel()
 
-        myProfileNameLabel.translatesAutoresizingMaskIntoConstraints = false
         myProfileNameLabel.text = "Dmitrii Varlakhanov"
         myProfileNameLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         myProfileNameLabel.textColor = .black
@@ -50,7 +49,6 @@ class ProfileHeaderView: UIView {
     private lazy var myStatusLabel: UILabel = {
         let myStatusLabel = UILabel()
 
-        myStatusLabel.translatesAutoresizingMaskIntoConstraints = false
         myStatusLabel.text = "Waiting for something..."
         myStatusLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         myStatusLabel.textColor = .gray
@@ -61,7 +59,6 @@ class ProfileHeaderView: UIView {
     private lazy var myShowStatusButton: UIButton = {
         let myShowStatusButton = UIButton()
 
-        myShowStatusButton.translatesAutoresizingMaskIntoConstraints = false
         myShowStatusButton.setTitle("Show status", for: .normal)
         myShowStatusButton.setTitleColor(.white, for: .normal)
         myShowStatusButton.backgroundColor = .blue
@@ -82,7 +79,6 @@ class ProfileHeaderView: UIView {
     private lazy var myCustomTextField: MyCustomTestField = {
         let myCustomTextField: MyCustomTestField = MyCustomTestField(insets: UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12))
 
-        myCustomTextField.translatesAutoresizingMaskIntoConstraints = false
         myCustomTextField.addTarget(self, action: #selector(statusTextChanged), for: .editingChanged)
 
         return myCustomTextField
@@ -218,30 +214,33 @@ class ProfileHeaderView: UIView {
     }
 
     private func setupConstraints() {
-        let safeAreaGuide = self.safeAreaLayoutGuide
+        myImageView.snp.makeConstraints({
+            $0.top.left.equalTo(self).inset(16)
+            $0.width.height.equalTo(128)
+        })
 
-        NSLayoutConstraint.activate([
-            myImageView.topAnchor.constraint(equalTo: safeAreaGuide.topAnchor, constant: 16),
-            myImageView.leftAnchor.constraint(equalTo: safeAreaGuide.leftAnchor, constant: 16),
-            myImageView.widthAnchor.constraint(equalToConstant: 128),
-            myImageView.heightAnchor.constraint(equalToConstant: 128),
+        myProfileNameLabel.snp.makeConstraints({
+            $0.top.equalTo(self).inset(27)
+            $0.left.equalTo(self.myImageView.snp.right).offset(27)
+        })
 
-            myProfileNameLabel.topAnchor.constraint(equalTo: safeAreaGuide.topAnchor, constant: 27),
-            myProfileNameLabel.leftAnchor.constraint(equalTo: myImageView.rightAnchor, constant: 27),
+        myShowStatusButton.snp.makeConstraints({
+            $0.left.right.equalTo(self).inset(16)
+            $0.top.equalTo(self.myImageView.snp.bottom).offset(36)
+            $0.height.equalTo(50)
+            $0.bottom.equalTo(self)
+        })
 
-            myShowStatusButton.leftAnchor.constraint(equalTo: safeAreaGuide.leftAnchor, constant: 16),
-            myShowStatusButton.rightAnchor.constraint(equalTo: safeAreaGuide.rightAnchor, constant: -16),
-            myShowStatusButton.topAnchor.constraint(equalTo: myImageView.bottomAnchor, constant: 36),
-            myShowStatusButton.heightAnchor.constraint(equalToConstant: 50),
-            myShowStatusButton.bottomAnchor.constraint(equalTo: safeAreaGuide.bottomAnchor),
+        myStatusLabel.snp.makeConstraints({
+            $0.left.equalTo(self.myImageView.snp.right).offset(27)
+            $0.bottom.equalTo(self.myShowStatusButton.snp.top).inset(-74)
+        })
 
-            myStatusLabel.leftAnchor.constraint(equalTo: myImageView.rightAnchor, constant: 27),
-            myStatusLabel.bottomAnchor.constraint(equalTo: myShowStatusButton.topAnchor, constant: -74),
-
-            myCustomTextField.leftAnchor.constraint(equalTo: myImageView.rightAnchor, constant: 27),
-            myCustomTextField.rightAnchor.constraint(equalTo: safeAreaGuide.rightAnchor, constant: -16),
-            myCustomTextField.topAnchor.constraint(equalTo: myStatusLabel.bottomAnchor, constant: 10),
-            myCustomTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
+        myCustomTextField.snp.makeConstraints({
+            $0.left.equalTo(self.myImageView.snp.right).offset(27)
+            $0.right.equalTo(self).offset(-16)
+            $0.top.equalTo(self.myStatusLabel.snp.bottom).offset(10)
+            $0.height.equalTo(40)
+        })
     }
 }
