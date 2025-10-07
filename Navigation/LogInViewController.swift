@@ -149,8 +149,57 @@ class LogInViewController: UIViewController {
     // MARK: - Actions
 
     @objc func logInButtonTapped() {
-        let profileViewController = ProfileViewController()
-        self.navigationController?.pushViewController(profileViewController, animated: true)
+#if DEBUG
+        let testUserService = TestUserService()
+
+        if testUserService.loginCheck(login: emailOrPhoneTextField.text ?? "") != nil {
+            let profileViewController = ProfileViewController()
+
+            profileViewController.user = testUserService.testUser
+
+            self.navigationController?.pushViewController(profileViewController, animated: true)
+        } else {
+            let alertController = UIAlertController(
+                title: "Неверный логин",
+                message: "Введите другой логин",
+                preferredStyle: .alert
+            )
+
+            let action = UIAlertAction(
+                title: "OK",
+                style: .cancel
+            )
+
+            alertController.addAction(action)
+
+            self.present(alertController, animated: true)
+        }
+#else
+        let currentUserService = CurrentUserService()
+
+        if currentUserService.loginCheck(login: emailOrPhoneTextField.text ?? "") != nil {
+            let profileViewController = ProfileViewController()
+
+            profileViewController.user = currentUserService.currentUser
+
+            self.navigationController?.pushViewController(profileViewController, animated: true)
+        } else {
+            let alertController = UIAlertController(
+                title: "Неверный логин",
+                message: "Введите другой логин",
+                preferredStyle: .alert
+            )
+
+            let action = UIAlertAction(
+                title: "OK",
+                style: .cancel
+            )
+
+            alertController.addAction(action)
+
+            self.present(alertController, animated: true)
+        }
+#endif
     }
 
     @objc func keyboardWillShow (_ notification: NSNotification) {

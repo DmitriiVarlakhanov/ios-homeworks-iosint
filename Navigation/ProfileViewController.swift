@@ -27,6 +27,8 @@ class ProfileViewController: UIViewController {
 
     fileprivate let data = PostModel.make()
 
+    var user: User?
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -140,7 +142,11 @@ extension ProfileViewController: UITableViewDataSource {
 extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section == 0 {
-            return ProfileHeaderView()
+            let profileHeaderView = ProfileHeaderView()
+
+            profileHeaderView.update(user: self.user)
+
+            return profileHeaderView
         } else {
             return nil
         }
