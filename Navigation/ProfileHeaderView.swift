@@ -243,4 +243,12 @@ class ProfileHeaderView: UIView {
             $0.height.equalTo(40)
         })
     }
+
+    // MARK: - Public
+
+    func update(user: User?) {
+        self.myProfileNameLabel.text = user?.fullName ?? ""
+        self.myImageView.image = user?.avatar ?? UIImage()
+        self.myStatusLabel.text = user?.status ?? ""
+    }
 }
