@@ -22,6 +22,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let feedNavigationController = UINavigationController(rootViewController: feedViewController)
         let profileNavigationController = UINavigationController(rootViewController: logInViewController)
 
+        logInViewController.logInDelegate = MyLogInFactory().makeLogInInspector()
+
         profileNavigationController.navigationBar.isHidden = false
 
         feedNavigationController.tabBarItem = UITabBarItem(title: "Feed", image: UIImage(systemName: "globe") , tag: 0)
