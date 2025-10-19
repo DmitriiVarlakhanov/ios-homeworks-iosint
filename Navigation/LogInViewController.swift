@@ -124,6 +124,8 @@ class LogInViewController: UIViewController {
         return contentView
     }()
 
+    var logInDelegate: LogInViewControllerDelegate?
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -150,43 +152,20 @@ class LogInViewController: UIViewController {
 
     @objc func logInButtonTapped() {
 #if DEBUG
-        let testUserService = TestUserService()
-
-        if testUserService.loginCheck(login: emailOrPhoneTextField.text ?? "") != nil {
-            let profileViewController = ProfileViewController()
-
-            profileViewController.user = testUserService.testUser
-
-            self.navigationController?.pushViewController(profileViewController, animated: true)
-        } else {
-            let alertController = UIAlertController(
-                title: "Неверный логин",
-                message: "Введите другой логин",
-                preferredStyle: .alert
-            )
-
-            let action = UIAlertAction(
-                title: "OK",
-                style: .cancel
-            )
-
-            alertController.addAction(action)
-
-            self.present(alertController, animated: true)
-        }
+        let service = TestUserService()
 #else
-        let currentUserService = CurrentUserService()
-
-        if currentUserService.loginCheck(login: emailOrPhoneTextField.text ?? "") != nil {
+        let service = CurrentUserService()
+#endif
+        if service.loginCheck(login: emailOrPhoneTextField.text ?? "") != nil && self.logInDelegate!.check(login: emailOrPhoneTextField.text ?? "", password: passwordTextField.text ?? "") {
             let profileViewController = ProfileViewController()
 
-            profileViewController.user = currentUserService.currentUser
+            profileViewController.user = service.testUser
 
             self.navigationController?.pushViewController(profileViewController, animated: true)
         } else {
             let alertController = UIAlertController(
-                title: "Неверный логин",
-                message: "Введите другой логин",
+                title: "Неверный логин или пароль",
+                message: "Повторите попытку",
                 preferredStyle: .alert
             )
 
@@ -199,7 +178,6 @@ class LogInViewController: UIViewController {
 
             self.present(alertController, animated: true)
         }
-#endif
     }
 
     @objc func keyboardWillShow (_ notification: NSNotification) {
