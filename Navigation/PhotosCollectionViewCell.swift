@@ -52,7 +52,7 @@ class PhotosCollectionViewCell: UICollectionViewCell {
 
     // MARK: - Public
 
-    func update(model: Image) {
-        imageView.image = UIImage(named: model.name)
+    func update(model: UIImage) {
+        imageView.image = model
     }
 }
