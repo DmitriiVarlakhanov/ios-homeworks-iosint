@@ -6,10 +6,15 @@
 //
 
 import UIKit
+import iOSIntPackage
 
 class PhotosViewController: UIViewController {
 
     // MARK: - Properties
+
+    let imagePublisherFacade = ImagePublisherFacade()
+
+    var imagesFromPublisher: [UIImage] = []
 
     fileprivate let images = Image.make()
 
@@ -46,6 +51,15 @@ class PhotosViewController: UIViewController {
 
         self.navigationController?.navigationBar.isHidden = false
         self.navigationItem.title = "Photo Gallery"
+
+        imagePublisherFacade.subscribe(self)
+        imagePublisherFacade.addImagesWithTimer(time: 1, repeat: 10)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        imagePublisherFacade.removeSubscription(for: self)
     }
 
     // MARK: - Private
@@ -67,8 +81,11 @@ class PhotosViewController: UIViewController {
 }
 
 extension PhotosViewController: UICollectionViewDataSource {
+
+    // MARK: - UICollectionViewDataSource Implementation
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return images.count
+        return imagesFromPublisher.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -79,13 +96,16 @@ extension PhotosViewController: UICollectionViewDataSource {
             fatalError("could not dequeueReusableCell")
         }
 
-        cell.update(model: images[indexPath.item])
+        cell.update(model: imagesFromPublisher[indexPath.item])
 
         return cell
     }
 }
 
-extension PhotosViewController: UICollectionViewDelegateFlowLayout {
+extension PhotosViewController: UICollectionViewDelegateFlowLayout, ImageLibrarySubscriber {
+
+    // MARK: - UICollectionViewDelegateFlowLayout Implementation
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (UIScreen.main.bounds.width - 4 * 8) / 3
 
@@ -102,5 +122,13 @@ extension PhotosViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+    }
+
+    // MARK: - ImageLibrarySubscriber Implementation
+
+    func receive(images: [UIImage]) {
+        self.imagesFromPublisher.append(images.last!)
+
+        self.collectionView.reloadData()
     }
 }
