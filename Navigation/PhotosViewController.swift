@@ -53,7 +53,13 @@ class PhotosViewController: UIViewController {
         self.navigationItem.title = "Photo Gallery"
 
         imagePublisherFacade.subscribe(self)
-        imagePublisherFacade.addImagesWithTimer(time: 1, repeat: 10)
+        imagePublisherFacade.addImagesWithTimer(
+            time: 0.5,
+            repeat: 20,
+            userImages: images.map({
+                UIImage(named: $0.name)!
+            })
+        )
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -127,8 +133,11 @@ extension PhotosViewController: UICollectionViewDelegateFlowLayout, ImageLibrary
     // MARK: - ImageLibrarySubscriber Implementation
 
     func receive(images: [UIImage]) {
-        self.imagesFromPublisher.append(images.last!)
+        self.imagesFromPublisher = images
 
         self.collectionView.reloadData()
+
+        let indexPathForScrolling = IndexPath(item: images.count - 1, section: 0)
+        self.collectionView.scrollToItem(at: indexPathForScrolling, at: .bottom, animated: true)
     }
 }
