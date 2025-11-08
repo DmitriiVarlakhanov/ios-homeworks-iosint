@@ -18,15 +18,15 @@ class FeedViewController: UIViewController {
 
     var post = Post(title: "New post")
 
+    private var feedViewModel: FeedViewModel
+
     private lazy var firstButton: CustomButton = {
         let firstButton = CustomButton(
             title: "First Button",
             titleColor: .white,
             backgroundColor: .systemBlue,
             closureForAction: {
-                let postViewController = PostViewController()
-                postViewController.post = self.post
-                self.navigationController?.pushViewController(postViewController, animated: true)
+                self.feedViewModel.toPostViewController()
             }
         )
         return firstButton
@@ -38,9 +38,7 @@ class FeedViewController: UIViewController {
             titleColor: .white,
             backgroundColor: .systemRed,
             closureForAction: {
-                let postViewController = PostViewController()
-                postViewController.post = self.post
-                self.navigationController?.pushViewController(postViewController, animated: true)
+                self.feedViewModel.toPostViewController()
             }
         )
         return secondButton
@@ -61,7 +59,7 @@ class FeedViewController: UIViewController {
         return stackView
     }()
 
-    private lazy var textField: MyCustomTestField = {
+    lazy var textField: MyCustomTestField = {
         let textField = MyCustomTestField(insets: UIEdgeInsets(
             top: 0,
             left: 12,
@@ -91,12 +89,7 @@ class FeedViewController: UIViewController {
             titleColor: .white,
             backgroundColor: .systemBlue,
             closureForAction: {
-                let feedModel = FeedModel()
-                if feedModel.check(wordToCheck: self.textField.text ?? "") {
-                    self.checkingResultLabel.backgroundColor = .systemGreen
-                } else {
-                    self.checkingResultLabel.backgroundColor = .systemRed
-                }
+                self.feedViewModel.toFeedModel()
             }
         )
 
@@ -107,7 +100,7 @@ class FeedViewController: UIViewController {
         return checkGuessButton
     }()
 
-    private lazy var checkingResultLabel: UILabel = {
+    lazy var checkingResultLabel: UILabel = {
         let checkingResultLabel = UILabel()
         
         checkingResultLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -122,6 +115,15 @@ class FeedViewController: UIViewController {
 
     // MARK: - Lifecycle
 
+    init(feedViewModel: FeedViewModel) {
+        self.feedViewModel = feedViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

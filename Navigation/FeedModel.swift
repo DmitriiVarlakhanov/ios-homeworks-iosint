@@ -13,10 +13,6 @@ class FeedModel {
     let secretWord: String = "test"
 
     func check(wordToCheck: String) -> Bool {
-        if wordToCheck == secretWord {
-            return true
-        } else {
-            return false
-        }
+        wordToCheck == secretWord
     }
 }
