@@ -49,6 +49,8 @@ class PhotosViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        self.view.backgroundColor = .white
+
         self.navigationController?.navigationBar.isHidden = false
         self.navigationItem.title = "Photo Gallery"
 

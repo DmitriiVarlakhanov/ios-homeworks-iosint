@@ -16,29 +16,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: scene)
 
-        let tabBarController = UITabBarController()
-        let feedViewModel = FeedViewModel()
-        let feedViewController = FeedViewController(feedViewModel: feedViewModel)
+        let navigationController = UINavigationController()
 
-        feedViewModel.feedViewController = feedViewController
+        print(navigationController)
 
-        let logInViewController = LogInViewController()
-        let feedNavigationController = UINavigationController(rootViewController: feedViewController)
-        let profileNavigationController = UINavigationController(rootViewController: logInViewController)
+        let mainCoordinator = MainCoordinator(navigationController: navigationController)
 
-        logInViewController.logInDelegate = MyLogInFactory().makeLogInInspector()
-
-        profileNavigationController.navigationBar.isHidden = false
-
-        feedNavigationController.tabBarItem = UITabBarItem(title: "Feed", image: UIImage(systemName: "globe") , tag: 0)
-        profileNavigationController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.crop.circle") , tag: 1)
-
-        let controllers = [feedNavigationController, profileNavigationController]
-
-        tabBarController.viewControllers = controllers
-
-        window.rootViewController = tabBarController
+        window.rootViewController = navigationController
         window.makeKeyAndVisible()
+
+        mainCoordinator.start()
 
         self.window = window
     }
