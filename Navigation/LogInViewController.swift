@@ -11,6 +11,8 @@ class LogInViewController: UIViewController {
 
     // MARK: - Properties
 
+    var profileCoordinator: ProfileCoordinator?
+
     private lazy var iconImageView: UIImageView = {
         let iconImageView = UIImageView()
 
@@ -161,7 +163,7 @@ class LogInViewController: UIViewController {
 
             profileViewController.user = service.testUser
 
-            self.navigationController?.pushViewController(profileViewController, animated: true)
+            profileCoordinator?.goToProfileViewController(profileViewController: profileViewController)
         } else {
             let alertController = UIAlertController(
                 title: "Неверный логин или пароль",
