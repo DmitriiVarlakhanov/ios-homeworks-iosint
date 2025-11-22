@@ -52,10 +52,37 @@ class PhotosViewController: UIViewController {
 
         self.navigationController?.navigationBar.isHidden = false
         self.navigationItem.title = "Photo Gallery"
+    }
 
-        createImagesAsFilteredImages()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-        self.collectionView.reloadData()
+        DispatchQueue.global(qos: .default).async {
+            let start = CFAbsoluteTimeGetCurrent()
+
+            ImageProcessor().processImagesOnThread(
+                sourceImages: self.imagesAsImages,
+                filter: .noir,
+                qos: .default,
+                completion: {
+                    self.imagesAsImages = $0.map { UIImage(cgImage: $0!) }
+
+                    let difference = CFAbsoluteTimeGetCurrent() - start
+
+                    print("Time: \(difference) sec")
+
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
+
+                    // MARK: 1) Filter: noir;    QoS: userInteractive;       Time: 1.379    sec
+                    // MARK: 2) Filter: noir;    QoS: userInitiated;         Time: 1.379    sec
+                    // MARK: 3) Filter: noir;    QoS: utility;               Time: 1.383    sec
+                    // MARK: 4) Filter: noir;    QoS: background;            Time: 6.031    sec
+                    // MARK: 5) Filter: noir;    QoS: default;               Time: 1.393    sec
+                }
+            )
+        }
     }
 
     // MARK: - Private
@@ -77,29 +104,6 @@ class PhotosViewController: UIViewController {
 
     private func createImagesAsImages() {
         imagesAsImages = images.map { UIImage(named: $0.name)! }
-    }
-
-    private func createImagesAsFilteredImages() {
-        let start = CFAbsoluteTimeGetCurrent()
-
-        ImageProcessor().processImagesOnThread(
-            sourceImages: imagesAsImages,
-            filter: .noir,
-            qos: .default,
-            completion: {
-                self.imagesAsImages = $0.map { UIImage(cgImage: $0!) }
-            }
-        )
-
-        let difference = CFAbsoluteTimeGetCurrent() - start
-
-        print("Time: \(difference) sec")
-
-        // MARK: 1) Filter: noir;    QoS: background;        Time: 2.5033950805664062e-05   sec
-        // MARK: 2) Filter: noir;    QoS: default;           Time: 2.09808349609375e-05     sec
-        // MARK: 3) Filter: noir;    QoS: userInitiated;     Time: 2.8014183044433594e-05   sec
-        // MARK: 4) Filter: noir;    QoS: userInteractive;   Time: 2.6941299438476562e-05   sec
-        // MARK: 5) Filter: noir;    QoS: utility;           Time: 4.7087669372558594e-05   sec
     }
 }
 
