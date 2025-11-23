@@ -12,11 +12,9 @@ class PhotosViewController: UIViewController {
 
     // MARK: - Properties
 
-    let imagePublisherFacade = ImagePublisherFacade()
-
-    var imagesFromPublisher: [UIImage] = []
-
     fileprivate let images = Image.make()
+
+    fileprivate var imagesAsImages: [UIImage] = []
 
     private enum CellReuseID: String {
         case first = "PhotosCollectionViewCell_ReuseID"
@@ -42,6 +40,7 @@ class PhotosViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        createImagesAsImages()
         addSubviews()
         setupConstraints()
     }
@@ -53,21 +52,37 @@ class PhotosViewController: UIViewController {
 
         self.navigationController?.navigationBar.isHidden = false
         self.navigationItem.title = "Photo Gallery"
-
-        imagePublisherFacade.subscribe(self)
-        imagePublisherFacade.addImagesWithTimer(
-            time: 0.5,
-            repeat: 20,
-            userImages: images.map({
-                UIImage(named: $0.name)!
-            })
-        )
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-        imagePublisherFacade.removeSubscription(for: self)
+        DispatchQueue.global(qos: .default).async {
+            let start = CFAbsoluteTimeGetCurrent()
+
+            ImageProcessor().processImagesOnThread(
+                sourceImages: self.imagesAsImages,
+                filter: .noir,
+                qos: .default,
+                completion: {
+                    self.imagesAsImages = $0.map { UIImage(cgImage: $0!) }
+
+                    let difference = CFAbsoluteTimeGetCurrent() - start
+
+                    print("Time: \(difference) sec")
+
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
+
+                    // MARK: 1) Filter: noir;    QoS: userInteractive;       Time: 1.379    sec
+                    // MARK: 2) Filter: noir;    QoS: userInitiated;         Time: 1.379    sec
+                    // MARK: 3) Filter: noir;    QoS: utility;               Time: 1.383    sec
+                    // MARK: 4) Filter: noir;    QoS: background;            Time: 6.031    sec
+                    // MARK: 5) Filter: noir;    QoS: default;               Time: 1.393    sec
+                }
+            )
+        }
     }
 
     // MARK: - Private
@@ -86,6 +101,10 @@ class PhotosViewController: UIViewController {
     private func addSubviews() {
         self.view.addSubview(collectionView)
     }
+
+    private func createImagesAsImages() {
+        imagesAsImages = images.map { UIImage(named: $0.name)! }
+    }
 }
 
 extension PhotosViewController: UICollectionViewDataSource {
@@ -93,7 +112,7 @@ extension PhotosViewController: UICollectionViewDataSource {
     // MARK: - UICollectionViewDataSource Implementation
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imagesFromPublisher.count
+        return images.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -104,13 +123,13 @@ extension PhotosViewController: UICollectionViewDataSource {
             fatalError("could not dequeueReusableCell")
         }
 
-        cell.update(model: imagesFromPublisher[indexPath.item])
+        cell.update(model: imagesAsImages[indexPath.item])
 
         return cell
     }
 }
 
-extension PhotosViewController: UICollectionViewDelegateFlowLayout, ImageLibrarySubscriber {
+extension PhotosViewController: UICollectionViewDelegateFlowLayout {
 
     // MARK: - UICollectionViewDelegateFlowLayout Implementation
 
@@ -130,16 +149,5 @@ extension PhotosViewController: UICollectionViewDelegateFlowLayout, ImageLibrary
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-    }
-
-    // MARK: - ImageLibrarySubscriber Implementation
-
-    func receive(images: [UIImage]) {
-        self.imagesFromPublisher = images
-
-        self.collectionView.reloadData()
-
-        let indexPathForScrolling = IndexPath(item: images.count - 1, section: 0)
-        self.collectionView.scrollToItem(at: indexPathForScrolling, at: .bottom, animated: true)
     }
 }
