@@ -13,6 +13,8 @@ class LogInViewController: UIViewController {
 
     var profileCoordinator: ProfileCoordinator?
 
+    var randomPassword: String?
+
     private lazy var iconImageView: UIImageView = {
         let iconImageView = UIImageView()
 
@@ -126,6 +128,54 @@ class LogInViewController: UIViewController {
         return contentView
     }()
 
+    private lazy var generatePassword: UIButton = {
+        let generatePassword = UIButton()
+
+        generatePassword.translatesAutoresizingMaskIntoConstraints = false
+        generatePassword.setTitle("Generate password", for: .normal)
+        generatePassword.setTitleColor(.white, for: .normal)
+        generatePassword.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        generatePassword.setBackgroundImage(UIImage(named: "PixelVKColor"), for: .normal)
+        generatePassword.alpha = 1.0
+
+        generatePassword.clipsToBounds = true
+
+        generatePassword.layer.cornerRadius = 10
+
+        generatePassword.addTarget(self, action: #selector(genaratePassword), for: .touchUpInside)
+
+        return generatePassword
+    }()
+
+    private lazy var bruteForce: UIButton = {
+        let bruteForce = UIButton()
+
+        bruteForce.translatesAutoresizingMaskIntoConstraints = false
+        bruteForce.setTitle("Brute force", for: .normal)
+        bruteForce.setTitleColor(.white, for: .normal)
+        bruteForce.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        bruteForce.setBackgroundImage(UIImage(named: "PixelVKColor"), for: .normal)
+        bruteForce.alpha = 1.0
+
+        bruteForce.clipsToBounds = true
+
+        bruteForce.layer.cornerRadius = 10
+
+        bruteForce.addTarget(self, action: #selector(bruteForcePassword), for: .touchUpInside)
+
+        return bruteForce
+    }()
+
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+
+        activityIndicator.hidesWhenStopped = true
+
+        return activityIndicator
+    }()
+
     var logInDelegate: LogInViewControllerDelegate?
 
     // MARK: - Lifecycle
@@ -182,14 +232,43 @@ class LogInViewController: UIViewController {
         }
     }
 
-    @objc func keyboardWillShow (_ notification: NSNotification) {
+    @objc func keyboardWillShow(_ notification: NSNotification) {
         let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height
 
         logInScrollView.contentInset.bottom += keyboardHeight ?? 0.0
     }
 
-    @objc func keyboardWillHide (_ notification: NSNotification) {
+    @objc func keyboardWillHide(_ notification: NSNotification) {
         logInScrollView.contentInset.bottom = 0.0
+    }
+
+    @objc func genaratePassword() -> String {
+        var randomPassword: String = ""
+
+        for _ in 1...4 {
+            randomPassword.append(String().printable.randomElement()!)
+        }
+
+        print("Generated password - \(randomPassword)")
+
+        self.randomPassword = randomPassword
+
+        return randomPassword
+    }
+
+    @objc func bruteForcePassword() {
+        self.activityIndicator.startAnimating()
+
+        DispatchQueue.global(qos: .default).async {
+            let bruteForcePassword = BruteForce().bruteForce(passwordToUnlock: self.randomPassword ?? "")
+
+            DispatchQueue.main.async {
+                self.activityIndicator.stopAnimating()
+
+                self.passwordTextField.text = bruteForcePassword
+                self.passwordTextField.isSecureTextEntry = false
+            }
+        }
     }
 
     // MARK: - Private
@@ -223,7 +302,23 @@ class LogInViewController: UIViewController {
             logInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             logInButton.topAnchor.constraint(equalTo: logInStackView.bottomAnchor, constant: 16),
             logInButton.heightAnchor.constraint(equalToConstant: 50),
-            logInButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+
+            generatePassword.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            generatePassword.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 16),
+            generatePassword.heightAnchor.constraint(equalToConstant: 50),
+            generatePassword.widthAnchor.constraint(equalToConstant: 150),
+            generatePassword.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+            bruteForce.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            bruteForce.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 16),
+            bruteForce.heightAnchor.constraint(equalToConstant: 50),
+            bruteForce.widthAnchor.constraint(equalToConstant: 150),
+            bruteForce.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+            activityIndicator.topAnchor.constraint(equalTo: passwordTextField.topAnchor),
+            activityIndicator.trailingAnchor.constraint(equalTo: passwordTextField.trailingAnchor),
+            activityIndicator.heightAnchor.constraint(equalToConstant: 50),
+            activityIndicator.widthAnchor.constraint(equalToConstant: 50)
         ])
     }
 
@@ -235,6 +330,10 @@ class LogInViewController: UIViewController {
         contentView.addSubview(iconImageView)
         contentView.addSubview(logInStackView)
         contentView.addSubview(logInButton)
+        contentView.addSubview(generatePassword)
+        contentView.addSubview(bruteForce)
+
+        passwordTextField.addSubview(activityIndicator)
     }
 
     private func setupView() {
