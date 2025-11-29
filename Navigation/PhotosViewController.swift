@@ -35,6 +35,8 @@ class PhotosViewController: UIViewController {
         return collectionView
     }()
 
+    var isImageProcessorSucceeded: Bool = false
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -57,32 +59,7 @@ class PhotosViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        DispatchQueue.global(qos: .default).async {
-            let start = CFAbsoluteTimeGetCurrent()
-
-            ImageProcessor().processImagesOnThread(
-                sourceImages: self.imagesAsImages,
-                filter: .noir,
-                qos: .default,
-                completion: {
-                    self.imagesAsImages = $0.map { UIImage(cgImage: $0!) }
-
-                    let difference = CFAbsoluteTimeGetCurrent() - start
-
-                    print("Time: \(difference) sec")
-
-                    DispatchQueue.main.async {
-                        self.collectionView.reloadData()
-                    }
-
-                    // MARK: 1) Filter: noir;    QoS: userInteractive;       Time: 1.379    sec
-                    // MARK: 2) Filter: noir;    QoS: userInitiated;         Time: 1.379    sec
-                    // MARK: 3) Filter: noir;    QoS: utility;               Time: 1.383    sec
-                    // MARK: 4) Filter: noir;    QoS: background;            Time: 6.031    sec
-                    // MARK: 5) Filter: noir;    QoS: default;               Time: 1.393    sec
-                }
-            )
-        }
+        imageProcessorCall()
     }
 
     // MARK: - Private
@@ -104,6 +81,54 @@ class PhotosViewController: UIViewController {
 
     private func createImagesAsImages() {
         imagesAsImages = images.map { UIImage(named: $0.name)! }
+    }
+
+    private func imageProcessorCall() {
+        DispatchQueue.global(qos: .default).async {
+            let start = CFAbsoluteTimeGetCurrent()
+
+            ImageProcessor().processImagesOnThread(
+                sourceImages: self.imagesAsImages,
+                filter: .noir,
+                qos: .default,
+                completion: {
+                    self.imagesAsImages = $0.map { UIImage(cgImage: $0!) }
+
+                    self.isImageProcessorSucceeded = true
+
+                    let difference = CFAbsoluteTimeGetCurrent() - start
+
+                    print("Time: \(difference) sec")
+
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+
+                        self.imageProcessorCallErrorCheck { result in
+                            switch result {
+                            case .success(let success):
+                                print("imageProcessorCallErrorCheck - \(success)")
+                            case .failure(let error):
+                                print("imageProcessorCallErrorCheck - error: \(error)")
+                            }
+                        }
+                    }
+
+                    // MARK: 1) Filter: noir;    QoS: userInteractive;       Time: 1.379    sec
+                    // MARK: 2) Filter: noir;    QoS: userInitiated;         Time: 1.379    sec
+                    // MARK: 3) Filter: noir;    QoS: utility;               Time: 1.383    sec
+                    // MARK: 4) Filter: noir;    QoS: background;            Time: 6.031    sec
+                    // MARK: 5) Filter: noir;    QoS: default;               Time: 1.393    sec
+                }
+            )
+        }
+    }
+
+    private func imageProcessorCallErrorCheck(completion: (Result<String, Error>) -> Void) {
+        if isImageProcessorSucceeded {
+            completion(.success("Success"))
+        } else {
+            completion(.failure(MyError.imageProcessorFailed))
+        }
     }
 }
 

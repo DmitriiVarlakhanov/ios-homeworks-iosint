@@ -9,7 +9,7 @@ import UIKit
 
 class TestUserService: UserService {
 
-    var testUser = User(
+    var testUser: User? = User(
         login: "test",
         fullName: "Test Name",
         avatar: UIImage(systemName: "person.crop.circle")!,
@@ -17,7 +17,7 @@ class TestUserService: UserService {
     )
 
     func loginCheck(login: String) -> User? {
-        if login == self.testUser.login {
+        if login == self.testUser?.login {
             return self.testUser
         } else {
             return nil
