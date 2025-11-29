@@ -42,6 +42,12 @@ class LogInViewController: UIViewController {
 
         emailOrPhoneTextField.delegate = self
 
+        emailOrPhoneTextField.addTarget(
+            self,
+            action: #selector(invalidateTimer),
+            for: .editingDidBegin
+        )
+
         return emailOrPhoneTextField
     }()
 
@@ -63,6 +69,12 @@ class LogInViewController: UIViewController {
         passwordTextField.layer.borderColor = .none
 
         passwordTextField.delegate = self
+
+        passwordTextField.addTarget(
+            self,
+            action: #selector(invalidateTimer),
+            for: .editingDidBegin
+        )
 
         return passwordTextField
     }()
@@ -178,6 +190,8 @@ class LogInViewController: UIViewController {
 
     var logInDelegate: LogInViewControllerDelegate?
 
+    var timer: Timer?
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -186,6 +200,7 @@ class LogInViewController: UIViewController {
         setupView()
         addSubviews()
         setupConstraints()
+        createTimer()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -214,6 +229,8 @@ class LogInViewController: UIViewController {
             profileViewController.user = service.testUser
 
             profileCoordinator?.goToProfileViewController(profileViewController: profileViewController)
+
+            self.timer?.invalidate()
         } else {
             let alertController = UIAlertController(
                 title: "Неверный логин или пароль",
@@ -269,6 +286,27 @@ class LogInViewController: UIViewController {
                 self.passwordTextField.isSecureTextEntry = false
             }
         }
+    }
+
+    @objc func showHint() {
+        let alertController = UIAlertController(
+            title: "Подсказка",
+            message: "Введите пароль и/или логин в поля ввода",
+            preferredStyle: .alert
+        )
+
+        self.present(alertController, animated: true)
+
+        let alertAction = UIAlertAction(
+            title: "Ок",
+            style: .cancel
+        )
+
+        alertController.addAction(alertAction)
+    }
+
+    @objc func invalidateTimer() {
+        self.timer?.invalidate()
     }
 
     // MARK: - Private
@@ -362,6 +400,20 @@ class LogInViewController: UIViewController {
         let notificationCenter = NotificationCenter.default
 
         notificationCenter.removeObserver(self)
+    }
+
+    private func createTimer() {
+        self.timer = Timer.scheduledTimer(
+            timeInterval: 30,
+            target: self,
+            selector: #selector(showHint),
+            userInfo: nil,
+            repeats: true
+        )
+
+        // Задача №1
+        // В данном примере таймер создается для того, чтобы инициировать появление alertController в качестве
+        // подсказки после 30 секунд ожидания действия ввода.
     }
 }
 
