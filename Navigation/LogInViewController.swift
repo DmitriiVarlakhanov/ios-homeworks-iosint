@@ -218,22 +218,11 @@ class LogInViewController: UIViewController {
     // MARK: - Actions
 
     @objc func logInButtonTapped() {
-#if DEBUG
-        let service = TestUserService()
-#else
-        let service = CurrentUserService()
-#endif
-        if service.loginCheck(login: emailOrPhoneTextField.text ?? "") != nil && self.logInDelegate!.check(login: emailOrPhoneTextField.text ?? "", password: passwordTextField.text ?? "") {
-            let profileViewController = ProfileViewController()
-
-            profileViewController.user = service.testUser
-
-            profileCoordinator?.goToProfileViewController(profileViewController: profileViewController)
-
-            self.timer?.invalidate()
-        } else {
+        do {
+            try logInButtonTappedNotObjc()
+        } catch MyError.unauthorized {
             let alertController = UIAlertController(
-                title: "Неверный логин или пароль",
+                title: "Неверный логин или пароль (.unauthorized)",
                 message: "Повторите попытку",
                 preferredStyle: .alert
             )
@@ -246,6 +235,8 @@ class LogInViewController: UIViewController {
             alertController.addAction(action)
 
             self.present(alertController, animated: true)
+        } catch {
+            print("Unknowed error")
         }
     }
 
@@ -414,6 +405,29 @@ class LogInViewController: UIViewController {
         // Задача №1
         // В данном примере таймер создается для того, чтобы инициировать появление alertController в качестве
         // подсказки после 30 секунд ожидания действия ввода.
+    }
+
+    private func logInButtonTappedNotObjc() throws {
+#if DEBUG
+        let service = TestUserService()
+#else
+        let service = CurrentUserService()
+#endif
+        guard service.testUser != nil else {
+            preconditionFailure("User must not be nil")
+        }
+
+        if service.loginCheck(login: emailOrPhoneTextField.text ?? "") != nil && self.logInDelegate!.check(login: emailOrPhoneTextField.text ?? "", password: passwordTextField.text ?? "") {
+            let profileViewController = ProfileViewController()
+
+            profileViewController.user = service.testUser
+
+            profileCoordinator?.goToProfileViewController(profileViewController: profileViewController)
+
+            self.timer?.invalidate()
+        } else {
+            throw MyError.unauthorized
+        }
     }
 }
 

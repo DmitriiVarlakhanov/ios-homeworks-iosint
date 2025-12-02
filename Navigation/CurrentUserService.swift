@@ -9,7 +9,7 @@ import UIKit
 
 class CurrentUserService: UserService {
 
-    var currentUser = User(
+    var currentUser: User? = User(
         login: "varldmit",
         fullName: "Dmitrii Varlakhanov",
         avatar: UIImage(named: "ProfilePhoto")!,
@@ -17,7 +17,7 @@ class CurrentUserService: UserService {
     )
 
     func loginCheck(login: String) -> User? {
-        if login == self.currentUser.login {
+        if login == self.currentUser?.login {
             return self.currentUser
         } else {
             return nil
