@@ -18,6 +18,11 @@ class FeedViewModel {
         self.feedViewController!.navigationController?.pushViewController(postViewController, animated: true)
     }
 
+    func toAudioPlayerViewController() {
+        let audioPlayerViewController = AudioPlayerViewController()
+        self.feedViewController!.navigationController?.pushViewController(audioPlayerViewController, animated: true)
+    }
+
     func toFeedModel() {
         let feedModel = FeedModel()
         if feedModel.check(wordToCheck: self.feedViewController!.textField.text ?? "") {

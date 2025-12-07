@@ -34,11 +34,11 @@ class FeedViewController: UIViewController {
 
     private lazy var secondButton: CustomButton = {
         let secondButton = CustomButton(
-            title: "Second Button",
+            title: "To Audio Player",
             titleColor: .white,
             backgroundColor: .systemRed,
             closureForAction: {
-                self.feedViewModel.toPostViewController()
+                self.feedViewModel.toAudioPlayerViewController()
             }
         )
         return secondButton
